@@ -68,10 +68,11 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
           return (
             <>
               <form key={i}>
-                <label className="form-check-label">
-                  Latitude:
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text">Lat:</span>
                   <input
                     type="number"
+                    className="form-control"
                     value={newMarker.points[i].lat}
                     onChange={(e) =>
                       setMarker((draft) => {
@@ -79,11 +80,10 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                       })
                     }
                   />
-                </label>
-                <label className="form-check-label">
-                  longditude:
+                  <span className="input-group-text">Long:</span>
                   <input
                     type="number"
+                    className="form-control"
                     value={newMarker.points[i].lng}
                     onChange={(e) =>
                       setMarker((draft) => {
@@ -91,7 +91,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                       })
                     }
                   />
-                </label>
+                </div>
                 {(newMarker.type == "CurveMarker" || newMarker.type == "PolyLine") && (
                   <div className="form-check form-switch">
                     <label className="form-check-label">
@@ -112,12 +112,11 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                     </label>
                   </div>
                 )}
-                <div className="form-check form-switch">
-                  <label className="form-check-label">
-                    Label:
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text">Label:</span>
+                  <div className="input-group-text">
                     <input
                       className="form-check-input"
-                      style={{ float: "none", marginLeft: "5px" }}
                       type="checkbox"
                       checked={newMarker.points[i].marker.options.label !== null}
                       role="switch"
@@ -129,54 +128,50 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                         });
                       }}
                     />
-                    {newMarker.points[i].marker.options.label !== null && (
-                      <>
-                        <span>
+                  </div>
+                  {newMarker.points[i].marker.options.label !== null && (
+                    <>
+                      <input
+                        className="form-control"
+                        type="text"
+                        value={newMarker.points[i].marker.options.label.text}
+                        onChange={(e) => {
+                          setMarker((draft) => {
+                            draft.points[i].marker.options.label.text = e.target.value;
+                          });
+                        }}
+                      />
+                      <input
+                        className="form-control-sm me-0"
+                        type="color"
+                        style={{ width: "31px", height: "31px" }}
+                        value={newMarker.points[i].marker.options.label.color}
+                        onChange={(e) => {
+                          setMarker((draft) => {
+                            draft.points[i].marker.options.label.color = e.target.value;
+                          });
+                        }}
+                      />
+                      <div className="input-group input-group-sm">
+                        <div className="input-group-text">
+                          <span>Icon:</span>
                           <input
-                            className="form-control"
-                            type="text"
-                            value={newMarker.points[i].marker.options.label.text}
+                            className="form-check-input mt-0"
+                            type="checkbox"
+                            role="switch"
+                            checked={newMarker.points[i].marker.options.icon === undefined}
                             onChange={(e) => {
                               setMarker((draft) => {
-                                draft.points[i].marker.options.label.text = e.target.value;
+                                draft.points[i].marker.options.icon = e.target.checked
+                                  ? undefined
+                                  : { path: google.maps.SymbolPath.CIRCLE, scale: 0 };
                               });
                             }}
                           />
-                          <input
-                            className="form-control"
-                            type="color"
-                            style={{ width: "40px" }}
-                            value={newMarker.points[i].marker.options.label.color}
-                            onChange={(e) => {
-                              setMarker((draft) => {
-                                draft.points[i].marker.options.label.color = e.target.value;
-                              });
-                            }}
-                          />
-                        </span>
-                      </>
-                    )}
-                  </label>
-                </div>
-                <div className="form-check form-switch">
-                  <label className="form-check-label">
-                    Icon:
-                    <input
-                      className="form-check-input"
-                      style={{ float: "none", marginLeft: "5px" }}
-                      type="checkbox"
-                      role="switch"
-                      checked={newMarker.points[i].marker.options.icon === undefined}
-                      onChange={(e) => {
-                        console.log();
-                        setMarker((draft) => {
-                          draft.points[i].marker.options.icon = e.target.checked
-                            ? undefined
-                            : { path: google.maps.SymbolPath.CIRCLE, scale: 0 };
-                        });
-                      }}
-                    />
-                  </label>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </form>
               <hr />
