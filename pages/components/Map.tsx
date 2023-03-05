@@ -20,7 +20,7 @@ const center = {
 
 export default function Map() {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
   const nextMarkerId = useRef<number>(1);
   const [markers, setMarkers] = useImmer<mapit.Marker[]>([]);
