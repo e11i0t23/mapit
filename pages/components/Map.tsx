@@ -18,28 +18,14 @@ const center = {
   lng: 30,
 };
 
-export default function Map() {
+export default function Map({ options, setOptions, markers, setMarkers }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
   const nextMarkerId = useRef<number>(1);
-  const [markers, setMarkers] = useImmer<mapit.Marker[]>([]);
   const [menu, setMenu] = useState<string>("style");
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [projection, setProjection] = useState<boolean>(false);
-  const [options, setOptions] = useImmer<google.maps.MapOptions>({
-    zoom: 2,
-    zoomControl: false,
-    minZoom: 2,
-    maxZoom: 16,
-    streetViewControl: false,
-    mapTypeControl: false,
-    fullscreenControl: false,
-    zoomControlOptions: {
-      position: 9,
-    },
-    styles: [],
-  });
 
   const onLoad = useCallback(function callback(map: google.maps.Map) {
     map.setOptions(options);

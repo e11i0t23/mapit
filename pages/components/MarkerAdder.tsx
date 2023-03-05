@@ -4,7 +4,7 @@ import { useImmer } from "use-immer";
 const blankPoint: mapit.Point = {
   lat: 0,
   lng: 0,
-  marker: { enabled: true, options: { label: null, icon: undefined } },
+  marker: { enabled: true, options: { label: null, icon: null } },
 };
 
 export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderProps) {
@@ -159,7 +159,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                             className="form-check-input mt-0"
                             type="checkbox"
                             role="switch"
-                            checked={newMarker.points[i].marker.options.icon === undefined}
+                            checked={newMarker.points[i].marker.options.icon === null}
                             onChange={(e) => {
                               setMarker((draft) => {
                                 draft.points[i].marker.options.icon = e.target.checked
