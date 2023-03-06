@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
-import { addDoc, collection, getDocs, getDoc, doc } from "@firebase/firestore";
+import { addDoc, collection, getDocs, getDoc, doc, updateDoc } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../../lib/firebase";
 
@@ -8,9 +8,11 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
   const [email, setEmail] = useState("");
   const [pwd, setPWD] = useState("");
   const [docs, setDocs] = useState<string[]>([]);
+  const [id, setId] = useState<string | undefined>();
 
   const handeClick = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("test");
     if (showPage == "register")
       createUserWithEmailAndPassword(auth, email, pwd)
         .then((userCredential) => {
@@ -43,13 +45,17 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
 
   const save = (e: React.MouseEvent) => {
     e.preventDefault();
-    addDoc(collection(db, `/user/${auth.currentUser?.uid}/maps`), { options: options, markers: markers })
-      .then((e) => console.log(e))
-      .catch((e) => console.log(e.message));
+    if (auth.currentUser !== null) {
+      if (id === undefined)
+        addDoc(collection(db, `/user/${auth.currentUser.uid}/maps`), { options: options, markers: markers })
+          .then((e) => setId(e.id))
+          .catch((e) => console.log(e.message));
+      else updateDoc(doc(db, "user", auth.currentUser.uid, "maps", id), { options: options, markers: markers });
+    }
   };
 
-  const loadOptions = (id: string) => {
-    if (auth.currentUser != null)
+  useEffect(() => {
+    if (auth.currentUser !== null && id !== undefined)
       getDoc(doc(db, "user", auth.currentUser.uid, "maps", id)).then((map) => {
         const data = map.data();
         if (data !== undefined) {
@@ -57,7 +63,7 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
           setMarkers(data.markers);
         }
       });
-  };
+  }, [id]);
 
   return (
     <>
@@ -90,7 +96,7 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
                     {docs.map((x, i) => {
                       return (
                         <li key={i}>
-                          <a className="dropdown-item" onClick={() => loadOptions(x)}>
+                          <a className="dropdown-item" onClick={() => setId(x)}>
                             {x}
                           </a>
                         </li>
