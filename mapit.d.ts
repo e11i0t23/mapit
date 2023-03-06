@@ -25,13 +25,6 @@ declare namespace mapit {
 }
 
 declare namespace mapit {
-  interface MarkersProps {
-    markers: Marker[];
-    map: google.maps.Map;
-  }
-}
-
-declare namespace mapit {
   interface MarkerAdderProps {
     addMarker: (marker: mapit.Marker) => void;
     marker?: mapit.Marker;
@@ -75,7 +68,7 @@ declare namespace mapit {
   }
 }
 
-namespace mapit {
+declare namespace mapit {
   type element =
     | "all"
     | "geometry"
@@ -121,4 +114,40 @@ namespace mapit {
     | "transit.station.bus"
     | "transit.station.rail"
     | "water";
+}
+
+declare namespace mapit {
+  type mainProps = {
+    options: google.maps.MapOptions;
+    setOptions: Updater<google.maps.MapOptions>;
+    markers: mapit.Marker[];
+    setMarkers: Updater<mapit.marker[]>;
+  };
+
+  type CurveMarkerProps = {
+    pos1: google.maps.LatLng;
+    pos2: google.maps.LatLng;
+    map: google.maps.Map;
+    zoom: number;
+  };
+
+  type stylesProp = {
+    options: google.maps.MapOptions;
+    setOptions: Updater<google.maps.MapOptions>;
+  };
+
+  type MarkersProps = {
+    markers: Marker[];
+    map: google.maps.Map;
+  };
+}
+
+declare namespace mapit {
+  interface stylesForm {
+    colorEnable: boolean;
+    color: string;
+    weightEnable: boolean;
+    weight: number;
+    visibility: visibility;
+  }
 }

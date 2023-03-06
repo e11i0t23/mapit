@@ -1,8 +1,8 @@
 import styles from "@/styles/Home.module.css";
 
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { Draft } from "immer";
 import { useCallback, useState, useRef } from "react";
-import { useImmer } from "use-immer";
 
 import MarkersAdder from "./MarkerAdder";
 import Markers from "./Markers";
@@ -18,7 +18,7 @@ const center = {
   lng: 30,
 };
 
-export default function Map({ options, setOptions, markers, setMarkers }) {
+export default function Map({ options, setOptions, markers, setMarkers }: mapit.mainProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
@@ -40,7 +40,7 @@ export default function Map({ options, setOptions, markers, setMarkers }) {
   const handleZoom = () => {
     let currentZoom = map?.getZoom();
     if (typeof currentZoom === "number" && currentZoom != options.zoom) {
-      setOptions((draft) => {
+      setOptions((draft: Draft<google.maps.MapOptions>) => {
         draft.zoom = typeof currentZoom === "number" ? currentZoom : 2;
       });
       return true;
@@ -50,14 +50,14 @@ export default function Map({ options, setOptions, markers, setMarkers }) {
 
   const addMarker = (marker: mapit.Marker) => {
     if (marker.id === null) {
-      setMarkers((draft) => {
+      setMarkers((draft: Draft<mapit.Marker[]>) => {
         draft.push({
           ...marker,
           id: nextMarkerId.current++,
         });
       });
     } else
-      setMarkers((draft) => {
+      setMarkers((draft: Draft<mapit.Marker[]>) => {
         const mark = draft.find((m) => m.id === marker.id);
         if (mark != undefined) {
           mark.type = marker.type;
@@ -118,7 +118,7 @@ export default function Map({ options, setOptions, markers, setMarkers }) {
                           <button
                             className="btn btn-danger"
                             onClick={() => {
-                              setMarkers((draft) => {
+                              setMarkers((draft: Draft<mapit.Marker[]>) => {
                                 draft[i].edit = true;
                               });
                             }}
@@ -128,7 +128,7 @@ export default function Map({ options, setOptions, markers, setMarkers }) {
                           <button
                             className="btn btn-danger"
                             onClick={() => {
-                              setMarkers((draft) => {
+                              setMarkers((draft: Draft<mapit.Marker[]>) => {
                                 draft.splice(i, 1);
                               });
                             }}
@@ -153,7 +153,7 @@ export default function Map({ options, setOptions, markers, setMarkers }) {
           onLoad={onLoad}
           onUnmount={onUnmount}
           options={{ ...options }}
-          zoom={options.zoom}
+          zoom={options.zoom as number | undefined}
           onZoomChanged={handleZoom}
           onProjectionChanged={() => {
             setProjection(true);

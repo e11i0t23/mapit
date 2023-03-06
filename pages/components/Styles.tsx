@@ -3,13 +3,11 @@ import styles from "@/styles/Styles.module.css";
 
 import { useEffect, useState } from "react";
 import { useImmer, Updater } from "use-immer";
+import { Draft } from "immer";
 
-interface stylesProp {
-  options: google.maps.MapOptions;
-  setOptions: Updater<google.maps.MapOptions>;
-}
+type visibility = "inherit" | "off" | "simplified" | "show";
 
-const defaultForm = {
+const defaultForm: mapit.stylesForm = {
   colorEnable: false,
   color: "#4c4c4c",
   weightEnable: false,
@@ -17,10 +15,10 @@ const defaultForm = {
   visibility: "inherit",
 };
 
-export default function Styles({ options, setOptions }: stylesProp) {
+export default function Styles({ options, setOptions }: mapit.stylesProp) {
   const [feature, setFeature] = useState<mapit.feature>();
   const [element, setElement] = useState<mapit.element>();
-  const [form, setForm] = useImmer(defaultForm);
+  const [form, setForm] = useImmer<mapit.stylesForm>(defaultForm);
 
   const processFeatures = (x: mapit.json.feature | mapit.json.element, i: number) => {
     var feat = "feature" in x ? true : false;
@@ -68,7 +66,7 @@ export default function Styles({ options, setOptions }: stylesProp) {
       setForm((draft) => {
         draft.colorEnable = color === undefined ? false : true;
         draft.color = color === undefined ? "#3c3c3c" : (color.color as string);
-        draft.visibility = visibility === undefined ? "inherit" : (visibility.visibility as string);
+        draft.visibility = visibility === undefined ? "inherit" : (visibility.visibility as visibility);
         draft.weightEnable = weight === undefined ? false : true;
         draft.weight = weight === undefined ? 1 : (weight.weight as number);
       });
@@ -88,7 +86,7 @@ export default function Styles({ options, setOptions }: stylesProp) {
     };
     // Check a feature and element type are set
     if (item.featureType !== undefined && item.elementType !== undefined) {
-      setOptions((draft) => {
+      setOptions((draft: Draft<google.maps.MapOptions>) => {
         // Find out if we are updating a style, adding a new style, or if no stylers are set we remove the style object
         var exists = draft.styles?.find((s) => s.featureType === feature && s.elementType === element);
         if (exists !== undefined && item.stylers.length > 0) exists.stylers = item.stylers;
@@ -170,7 +168,7 @@ export default function Styles({ options, setOptions }: stylesProp) {
                     checked={form.visibility == "inherit"}
                     onChange={(e) => {
                       setForm((d) => {
-                        d.visibility = e.target.value;
+                        d.visibility = "inherit";
                       });
                     }}
                   />
@@ -185,7 +183,7 @@ export default function Styles({ options, setOptions }: stylesProp) {
                     checked={form.visibility == "off"}
                     onChange={(e) => {
                       setForm((d) => {
-                        d.visibility = e.target.value;
+                        d.visibility = "off";
                       });
                     }}
                   />
@@ -195,12 +193,12 @@ export default function Styles({ options, setOptions }: stylesProp) {
                   <input
                     className="form-check-input"
                     type="radio"
-                    value="simplfied"
+                    value="simplified"
                     name="visibilityRadio"
-                    checked={form.visibility == "simplfied"}
+                    checked={form.visibility == "simplified"}
                     onChange={(e) => {
                       setForm((d) => {
-                        d.visibility = e.target.value;
+                        d.visibility = "simplified";
                       });
                     }}
                   />
@@ -215,7 +213,7 @@ export default function Styles({ options, setOptions }: stylesProp) {
                     checked={form.visibility == "show"}
                     onChange={(e) => {
                       setForm((d) => {
-                        d.visibility = e.target.value;
+                        d.visibility = "show";
                       });
                     }}
                   />

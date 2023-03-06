@@ -1,12 +1,15 @@
 import { Marker } from "@react-google-maps/api";
 
-export default function CurveMarker({ pos1, pos2, map, zoom }) {
-  if (!map || map == null || map.getProjection() == undefined) return <div />;
+export default function CurveMarker({ pos1, pos2, map, zoom }: mapit.CurveMarkerProps) {
+  const mapProjection = map.getProjection();
+  if (mapProjection == undefined) return <div />;
+
   var curvature = 0.2;
-  const p1 = map.getProjection().fromLatLngToPoint(pos1),
-    p2 = map.getProjection().fromLatLngToPoint(pos2);
+  const p1 = mapProjection.fromLatLngToPoint(pos1),
+    p2 = mapProjection.fromLatLngToPoint(pos2);
 
   // Calculating the arc.
+  if (p1 === null || p2 === null) return <div />;
   const e = new google.maps.Point(p2.x - p1.x, p2.y - p1.y), // endpoint
     m = new google.maps.Point(e.x / 2, e.y / 2), // midpoint
     o = new google.maps.Point(e.y, -e.x), // orthogonal

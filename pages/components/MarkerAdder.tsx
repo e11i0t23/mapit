@@ -1,3 +1,4 @@
+import { Draft } from "immer";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
@@ -22,14 +23,14 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
   }, [marker]);
 
   function onSubmit() {
-    setMarker((draft) => {
+    setMarker((draft: Draft<mapit.Marker>) => {
       draft.edit = false;
     });
     addMarker(newMarker);
     setMarker({ id: null, type: "Point", points: [blankPoint], edit: false });
   }
 
-  function updateType(e) {
+  function updateType(e: React.ChangeEvent<HTMLSelectElement>) {
     const type = e.target.value;
     let len = 0;
     switch (type) {
@@ -75,7 +76,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                     className="form-control"
                     value={newMarker.points[i].lat}
                     onChange={(e) =>
-                      setMarker((draft) => {
+                      setMarker((draft: Draft<mapit.Marker>) => {
                         draft.points[i].lat = parseFloat(e.target.value);
                       })
                     }
@@ -86,7 +87,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                     className="form-control"
                     value={newMarker.points[i].lng}
                     onChange={(e) =>
-                      setMarker((draft) => {
+                      setMarker((draft: Draft<mapit.Marker>) => {
                         draft.points[i].lng = parseFloat(e.target.value);
                       })
                     }
@@ -104,7 +105,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                         checked={newMarker.points[i].marker.enabled}
                         onChange={(e) => {
                           console.log();
-                          setMarker((draft) => {
+                          setMarker((draft: Draft<mapit.Marker>) => {
                             draft.points[i].marker.enabled = e.target.checked;
                           });
                         }}
@@ -121,7 +122,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                       checked={newMarker.points[i].marker.options.label !== null}
                       role="switch"
                       onChange={(e) => {
-                        setMarker((draft) => {
+                        setMarker((draft: Draft<mapit.Marker>) => {
                           draft.points[i].marker.options.label = e.target.checked
                             ? { color: "#ffffff", text: "" }
                             : null;
@@ -136,7 +137,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                         type="text"
                         value={newMarker.points[i].marker.options.label.text}
                         onChange={(e) => {
-                          setMarker((draft) => {
+                          setMarker((draft: Draft<mapit.Marker>) => {
                             draft.points[i].marker.options.label.text = e.target.value;
                           });
                         }}
@@ -147,7 +148,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                         style={{ width: "31px", height: "31px" }}
                         value={newMarker.points[i].marker.options.label.color}
                         onChange={(e) => {
-                          setMarker((draft) => {
+                          setMarker((draft: Draft<mapit.Marker>) => {
                             draft.points[i].marker.options.label.color = e.target.value;
                           });
                         }}
@@ -161,7 +162,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                             role="switch"
                             checked={newMarker.points[i].marker.options.icon === null}
                             onChange={(e) => {
-                              setMarker((draft) => {
+                              setMarker((draft: Draft<mapit.Marker>) => {
                                 draft.points[i].marker.options.icon = e.target.checked
                                   ? undefined
                                   : { path: google.maps.SymbolPath.CIRCLE, scale: 0 };

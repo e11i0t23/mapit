@@ -3,11 +3,11 @@ import { addDoc, collection, getDocs, getDoc, doc } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../util/firebase";
 
-export default function Header({ options, setOptions, markers, setMarkers }) {
+export default function Header({ options, setOptions, markers, setMarkers }: mapit.mainProps) {
   const [showPage, setShowPage] = useState<string>("app");
   const [email, setEmail] = useState("");
   const [pwd, setPWD] = useState("");
-  const [docs, setDocs] = useState([]);
+  const [docs, setDocs] = useState<string[]>([]);
 
   const handeClick = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,26 +34,28 @@ export default function Header({ options, setOptions, markers, setMarkers }) {
     if (auth.currentUser != null)
       getDocs(collection(db, `/user/${auth.currentUser?.uid}/maps`))
         .then((maps) => {
-          var arr = [];
+          var arr: string[] = [];
           maps.docs.forEach((doc) => arr.push(doc.id));
           return arr;
         })
         .then((arr) => setDocs(arr));
   }, [auth.currentUser]);
 
-  const save = (e) => {
+  const save = (e: React.MouseEvent) => {
     e.preventDefault();
     addDoc(collection(db, `/user/${auth.currentUser?.uid}/maps`), { options: options, markers: markers })
       .then((e) => console.log(e))
       .catch((e) => console.log(e.message));
   };
 
-  const loadOptions = (id) => {
+  const loadOptions = (id: string) => {
     if (auth.currentUser != null)
       getDoc(doc(db, "user", auth.currentUser.uid, "maps", id)).then((map) => {
         const data = map.data();
-        setOptions(data.options);
-        setMarkers(data.markers);
+        if (data !== undefined) {
+          setOptions(data.options);
+          setMarkers(data.markers);
+        }
       });
   };
 
