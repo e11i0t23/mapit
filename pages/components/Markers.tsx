@@ -2,6 +2,7 @@ import { Marker, Polyline } from "@react-google-maps/api";
 import CurveMarker from "./CurveMarker";
 
 export default function Markers({ markers, map }: mapit.MarkersProps) {
+  if (map == undefined) return <div />;
   var i = 0;
   var arr = [<div key={"hello"}>hello</div>];
   const zoom = map.getZoom() as number;

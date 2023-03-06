@@ -1,4 +1,4 @@
-import styleOptions from "../util/styles";
+import styleOptions from "../../lib/styles";
 import styles from "@/styles/Styles.module.css";
 
 import { useEffect, useState } from "react";

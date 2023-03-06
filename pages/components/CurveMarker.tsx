@@ -1,6 +1,7 @@
 import { Marker } from "@react-google-maps/api";
 
 export default function CurveMarker({ pos1, pos2, map, zoom }: mapit.CurveMarkerProps) {
+  if (map == undefined) return <div />;
   const mapProjection = map.getProjection();
   if (mapProjection == undefined) return <div />;
 

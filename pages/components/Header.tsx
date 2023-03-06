@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
 import { addDoc, collection, getDocs, getDoc, doc } from "@firebase/firestore";
 import { useEffect, useState } from "react";
-import { auth, db } from "../util/firebase";
+import { auth, db } from "../../lib/firebase";
 
 export default function Header({ options, setOptions, markers, setMarkers }: mapit.mainProps) {
   const [showPage, setShowPage] = useState<string>("app");
