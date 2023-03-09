@@ -4,7 +4,6 @@ import CurveMarker from "./CurveMarker";
 import { useEffect } from "react";
 
 export default function Markers({ markers, map }: mapit.MarkersProps) {
-  if (map == undefined) return <div />;
   var i = 0;
   var [arr, setArr] = useImmer<JSX.Element[]>([]);
   const zoom = map.getZoom() as number;
