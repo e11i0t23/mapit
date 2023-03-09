@@ -3,7 +3,7 @@ import { addDoc, collection, getDocs, getDoc, doc, updateDoc } from "@firebase/f
 import { useEffect, useState } from "react";
 import { auth, db } from "../../lib/firebase";
 
-export default function Header({ options, setOptions, markers, setMarkers }: mapit.mainProps) {
+export default function Header({ options, setOptions, markers, setMarkers, menu, setMenu }: mapit.mainProps) {
   const [showPage, setShowPage] = useState<string>("app");
   const [email, setEmail] = useState("");
   const [pwd, setPWD] = useState("");
@@ -12,7 +12,6 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
 
   const handeClick = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("test");
     if (showPage == "register")
       createUserWithEmailAndPassword(auth, email, pwd)
         .then((userCredential) => {
@@ -70,18 +69,20 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
       <nav className="navbar navbar-expand">
         <div className="container-fluid" style={{ zIndex: 1000 }}>
           <ul className="navbar-nav navbar-expand">
+            <li className="nav-item me-3">
+              <a className={`nav-link ${menu == "style" ? "active" : ""}`} onClick={() => setMenu("style")}>
+                Styles
+              </a>
+            </li>
+            <li className="nav-item me-3">
+              <a className={`nav-link ${menu == "markers" ? "active" : ""}`} onClick={() => setMenu("markers")}>
+                Markers
+              </a>
+            </li>
+          </ul>
+          <ul className="navbar-nav navbar-expand">
             {auth.currentUser !== null ? (
               <>
-                <li className="nav-item me-3">
-                  <a className="nav-link" href="" onClick={() => auth.signOut()}>
-                    Logout
-                  </a>
-                </li>
-                <li className="nav-item me-3">
-                  <a className="nav-link" onClick={save}>
-                    Save
-                  </a>
-                </li>
                 <li className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle"
@@ -90,7 +91,7 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    Dropdown
+                    Load
                   </a>
                   <ul className="dropdown-menu dropdown-menu-dark">
                     {docs.map((x, i) => {
@@ -103,6 +104,16 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
                       );
                     })}
                   </ul>
+                </li>
+                <li className="nav-item me-3">
+                  <a className="nav-link" onClick={save}>
+                    Save
+                  </a>
+                </li>
+                <li className="nav-item me-3">
+                  <a className="nav-link" href="" onClick={() => auth.signOut()}>
+                    Logout
+                  </a>
                 </li>
               </>
             ) : (
@@ -134,28 +145,107 @@ export default function Header({ options, setOptions, markers, setMarkers }: map
             zIndex: 1000,
           }}
         >
+          <button
+            type="button"
+            className="btn-close"
+            style={{
+              position: "absolute",
+              right: "5px",
+              top: "5px",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowPage("app");
+            }}
+            aria-label="Close"
+          ></button>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
-            <h1>{showPage}</h1>
-            <form onSubmit={handeClick}>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                className="form-control"
-                id="password"
-                value={pwd}
-                onChange={(e) => setPWD(e.target.value)}
-              />
-              <input type="submit" className="form-control" />
-            </form>
+            <div>
+              <form onSubmit={handeClick}>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email"
+                />
+                <input
+                  type="password"
+                  className="form-control"
+                  id="password"
+                  value={pwd}
+                  onChange={(e) => setPWD(e.target.value)}
+                  placeholder="password"
+                />
+                <input type="submit" className="form-control" value={showPage} />
+              </form>
+
+              {showPage === "sign-in" && (
+                <p>
+                  Dont have an account?
+                  <a
+                    href=""
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPage("register");
+                    }}
+                  >
+                    Register here
+                  </a>
+                </p>
+              )}
+              {showPage === "register" && (
+                <p>
+                  Already have an account?
+                  <a
+                    href=""
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPage("sign-in");
+                    }}
+                  >
+                    Login here
+                  </a>
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
     </>
   );
 }
+
+{
+  /* <div className="row">
+<div className="btn-group" role="group">
+
+<button
+    className="btn btn-primary"
+    onClick={(e) => {
+      setMenu("style");
+    }}
+  >
+    Style
+  </button>
+  <button
+    className="btn btn-primary"
+    onClick={(e) => {
+      setMenu("markers");
+    }}
+  >
+    Markers
+  </button>
+  
+  {/* <button
+    className="btn btn-primary"
+    onClick={(e) => {
+      setMenu("other");
+    }}
+  >
+    Other
+  </button> */
+}
+// </div>
+// </div> */}

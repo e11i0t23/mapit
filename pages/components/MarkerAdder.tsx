@@ -5,6 +5,7 @@ import { useImmer } from "use-immer";
 const blankPoint: mapit.Point = {
   lat: 0,
   lng: 0,
+  search: "",
   marker: { enabled: true, options: { label: null, icon: null } },
 };
 
@@ -14,10 +15,11 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
     type: "Point",
     points: [blankPoint],
     edit: false,
+    polyLineOptions: undefined,
   });
 
   useEffect(() => {
-    if (marker != undefined) {
+    if (marker !== undefined) {
       setMarker(marker);
     }
   }, [marker]);
@@ -27,11 +29,12 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
       draft.edit = false;
     });
     addMarker(newMarker);
-    setMarker({ id: null, type: "Point", points: [blankPoint], edit: false });
+    setMarker({ id: null, type: "Point", points: [blankPoint], edit: false, polyLineOptions: undefined });
   }
 
   function updateType(e: React.ChangeEvent<HTMLSelectElement>) {
-    const type = e.target.value;
+    console.log("uuuuu");
+    const type = e.target.value as mapit.MarkerType;
     let len = 0;
     switch (type) {
       case "Point":
@@ -43,9 +46,15 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
       case "PolyLine":
         len = 2;
         break;
+      case "Route":
+        len = 2;
+        break;
     }
     setMarker((draft) => {
       draft.type = type;
+      if (type === "PolyLine" || type === "Route") {
+        if (draft.polyLineOptions === undefined) draft.polyLineOptions = { strokeColor: "#007bff", strokeOpacity: 50 };
+      } else draft.polyLineOptions = undefined;
       if (newMarker.points.length > len) {
         draft.points.splice(1);
       } else if (newMarker.points.length < len) {
@@ -62,13 +71,28 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
         <option value="Point">Point</option>
         <option value="CurveMarker">Arc</option>
         <option value="PolyLine">PolyLine</option>
+        <option value="Route">Route</option>
       </select>
       <div></div>
       <div style={{ maxHeight: "22vh", overflow: "hidden", overflowY: "scroll", textAlign: "center" }}>
         {Array.apply(0, Array(newMarker.points.length)).map(function (x, i) {
           return (
-            <>
-              <form key={i}>
+            <form key={i}>
+              {newMarker.type === "Route" ? (
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text">Place:</span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newMarker.points[i].search}
+                    onChange={(e) =>
+                      setMarker((draft: Draft<mapit.Marker>) => {
+                        draft.points[i].search = e.target.value;
+                      })
+                    }
+                  />
+                </div>
+              ) : (
                 <div className="input-group input-group-sm">
                   <span className="input-group-text">Lat:</span>
                   <input
@@ -93,26 +117,28 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                     }
                   />
                 </div>
-                {(newMarker.type == "CurveMarker" || newMarker.type == "PolyLine") && (
-                  <div className="form-check form-switch">
-                    <label className="form-check-label">
-                      Show Points at end of Line:
-                      <input
-                        className="form-check-input"
-                        style={{ float: "none", marginLeft: "5px" }}
-                        type="checkbox"
-                        role="switch"
-                        checked={newMarker.points[i].marker.enabled}
-                        onChange={(e) => {
-                          console.log();
-                          setMarker((draft: Draft<mapit.Marker>) => {
-                            draft.points[i].marker.enabled = e.target.checked;
-                          });
-                        }}
-                      />
-                    </label>
-                  </div>
-                )}
+              )}
+              {(newMarker.type == "CurveMarker" || newMarker.type == "PolyLine") && (
+                <div className="form-check form-switch">
+                  <label className="form-check-label">
+                    Show Points at end of Line:
+                    <input
+                      className="form-check-input"
+                      style={{ float: "none", marginLeft: "5px" }}
+                      type="checkbox"
+                      role="switch"
+                      checked={newMarker.points[i].marker.enabled}
+                      onChange={(e) => {
+                        console.log();
+                        setMarker((draft: Draft<mapit.Marker>) => {
+                          draft.points[i].marker.enabled = e.target.checked;
+                        });
+                      }}
+                    />
+                  </label>
+                </div>
+              )}
+              {newMarker.type !== "Route" && (
                 <div className="input-group input-group-sm">
                   <span className="input-group-text">Label:</span>
                   <div className="input-group-text">
@@ -174,11 +200,40 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
                     </>
                   )}
                 </div>
-              </form>
-              <hr />
-            </>
+              )}
+            </form>
           );
         })}
+        {(newMarker.type === "PolyLine" || newMarker.type === "Route") && (
+          <form>
+            <div className="input-group input-group-sm">
+              <span className="input-group-text">Color:</span>
+              <input
+                className="form-control"
+                type="color"
+                value={newMarker.polyLineOptions?.strokeColor as string}
+                onChange={(e) => {
+                  setMarker((draft) => {
+                    if (draft.polyLineOptions !== undefined)
+                      draft.polyLineOptions = { ...draft.polyLineOptions, strokeColor: e.target.value };
+                  });
+                }}
+              />
+              <span className="input-group-text">Opacity</span>
+              <input
+                className="form-control"
+                type="number"
+                value={newMarker.polyLineOptions?.strokeOpacity as number}
+                onChange={(e) => {
+                  setMarker((draft) => {
+                    if (draft.polyLineOptions !== undefined)
+                      draft.polyLineOptions = { ...draft.polyLineOptions, strokeOpacity: parseInt(e.target.value) };
+                  });
+                }}
+              />
+            </div>
+          </form>
+        )}
       </div>
       {newMarker.type == "PolyLine" && (
         <button

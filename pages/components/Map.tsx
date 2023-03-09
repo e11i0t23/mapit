@@ -10,7 +10,7 @@ import Styles from "./Styles";
 
 const containerStyle = {
   width: "73vw",
-  height: "98vh",
+  height: "calc(100vh - 100px)",
 };
 
 const center = {
@@ -18,12 +18,11 @@ const center = {
   lng: 30,
 };
 
-export default function Map({ options, setOptions, markers, setMarkers }: mapit.mainProps) {
+export default function Map({ options, setOptions, markers, setMarkers, menu, setMenu }: mapit.mainProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
   const nextMarkerId = useRef<number>(1);
-  const [menu, setMenu] = useState<string>("style");
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [projection, setProjection] = useState<boolean>(false);
 
@@ -63,6 +62,7 @@ export default function Map({ options, setOptions, markers, setMarkers }: mapit.
           mark.type = marker.type;
           mark.points = marker.points;
           mark.edit = false;
+          mark.polyLineOptions = marker.polyLineOptions;
         }
       });
   };
@@ -70,35 +70,7 @@ export default function Map({ options, setOptions, markers, setMarkers }: mapit.
   return isLoaded ? (
     <div className="row">
       <div className={`col-3`}>
-        <div className="row">
-          <div className="btn-group" role="group">
-            <button
-              className="btn btn-primary"
-              onClick={(e) => {
-                setMenu("style");
-              }}
-            >
-              Style
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={(e) => {
-                setMenu("markers");
-              }}
-            >
-              Markers
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={(e) => {
-                setMenu("other");
-              }}
-            >
-              Other
-            </button>
-          </div>
-        </div>
-        <div className="row">
+        <div className="row" style={{ height: "calc(100vh - 100px)", overflowY: "scroll" }}>
           {menu === "markers" && (
             <>
               <div style={{ height: "28vh" }}>

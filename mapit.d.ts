@@ -5,15 +5,21 @@ type CreateMutable<Type> = {
 declare namespace mapit {
   interface Marker {
     id: number | null;
-    type: string;
+    type: MarkerType;
     points: mapit.point[];
     edit: boolean;
+    polyLineOptions?: google.maps.PolylineOptions;
   }
+
+  type MarkerType = "Point" | "PolyLine" | "CurveMarker" | "Route";
+
+  type menu = "style" | "markers";
 }
 
 declare namespace mapit {
   interface Point extends google.maps.LatLngLiteral {
     marker: mapit.MarkerOptions;
+    search: string | undefined;
   }
 }
 
@@ -122,6 +128,8 @@ declare namespace mapit {
     setOptions: Updater<google.maps.MapOptions>;
     markers: mapit.Marker[];
     setMarkers: Updater<mapit.marker[]>;
+    menu: mapit.menu;
+    setMenu: SetStateAction<mapit.menu>;
   };
 
   type CurveMarkerProps = {
