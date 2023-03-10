@@ -2,13 +2,27 @@ import { Marker, Polyline, DirectionsRenderer } from "@react-google-maps/api";
 import { useImmer } from "use-immer";
 import CurveMarker from "./CurveMarker";
 import { useEffect } from "react";
+import { staticMapUrl } from "static-google-map";
 
-export default function Markers({ markers, map }: mapit.MarkersProps) {
+export default function Markers({ markers, map, style, staticURL, setStaticURL }: mapit.MarkersProps) {
   var i = 0;
-  var [arr, setArr] = useImmer<JSX.Element[]>([]);
+
   const zoom = map === undefined ? 1 : (map.getZoom() as number);
+
+  var [arr, setArr] = useImmer<JSX.Element[]>([]);
+
+  useEffect(() => {
+    setStaticURL((draft) => {
+      draft.style = handleStyles(style);
+    });
+  }, [style]);
+
   useEffect(() => {
     setArr([]);
+    setStaticURL((d) => {
+      d.markers = [];
+      d.paths = [];
+    });
     for (const marker of markers) {
       switch (marker.type) {
         case "CurveMarker":
@@ -20,6 +34,12 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
               setArr((d) => {
                 d.push(<Marker key={i++} position={point} clickable={false} options={point.marker.options} />);
               });
+              setStaticURL((d) => {
+                d.markers?.push({
+                  color: `red`,
+                  location: { lat: point.lat.toString(), lng: point.lng.toString() },
+                });
+              });
             }
           }
           break;
@@ -27,10 +47,26 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
           setArr((d) => {
             d.push(<Polyline key={i++} path={marker.points} />);
           });
+          setStaticURL((d) => {
+            d.paths?.push({
+              color: `${(marker.polyLineOptions?.strokeColor as string).replace("#", "0x")}${(
+                ((marker.polyLineOptions?.strokeOpacity as number) * 255) /
+                100
+              ).toString(16)}`,
+              weight: 2,
+              points: marker.points.map((x, i) => `${x.lat},${x.lng}`),
+            });
+          });
           for (const point of marker.points) {
             if (point.marker.enabled) {
               setArr((d) => {
                 d.push(<Marker key={i++} position={point} clickable={false} options={point.marker.options} />);
+              });
+              setStaticURL((d) => {
+                d.markers?.push({
+                  color: `red`,
+                  location: { lat: point.lat.toString(), lng: point.lng.toString() },
+                });
               });
             }
           }
@@ -46,6 +82,12 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
               />
             );
           });
+          setStaticURL((d) => {
+            d.markers?.push({
+              color: `red`,
+              location: { lat: marker.points[0].lat.toString(), lng: marker.points[0].lng.toString() },
+            });
+          });
           break;
         case "Route":
           console.log(marker.polyLineOptions);
@@ -55,6 +97,7 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
               setArr((d) => {
                 d.push(
                   <DirectionsRenderer
+                    key={i++}
                     options={{
                       directions: result,
                       draggable: true,
@@ -63,6 +106,16 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
                     }}
                   />
                 );
+              });
+              setStaticURL((d) => {
+                d.paths?.push({
+                  color: `${(marker.polyLineOptions?.strokeColor as string).replace("#", "0x")}${(
+                    ((marker.polyLineOptions?.strokeOpacity as number) * 255) /
+                    100
+                  ).toString(16)}`,
+                  weight: 2,
+                  points: result?.routes[0].overview_path.map((x, i) => x.toUrlValue()) as string[],
+                });
               });
             }
           };
@@ -80,7 +133,23 @@ export default function Markers({ markers, map }: mapit.MarkersProps) {
           break;
       }
     }
-  }, [markers]);
-
+  }, [markers, map.getZoom()]);
+  useEffect(() => {
+    console.log(staticMapUrl(staticURL));
+  }, [staticURL]);
   return <div>{...arr}</div>;
 }
+
+const handleStyles = (styles: google.maps.MapTypeStyle[]) => {
+  var style = "";
+  for (const s of styles) {
+    style += `&style=feature:${s.featureType}|element:${s.elementType}`;
+    s.stylers.forEach((x) => {
+      if ("color" in x) style += `|color:${x.color}`;
+      if ("weight" in x) style += `|weight:${x.weight}`;
+      if ("visibility" in x) style += `|visibility:${x.visibility}`;
+    });
+  }
+
+  return style.replaceAll("#", "0x").replaceAll("|", "%7C").replace("&style=", "");
+};

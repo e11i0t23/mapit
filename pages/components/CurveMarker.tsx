@@ -27,5 +27,7 @@ export default function CurveMarker({ pos1, pos2, map, zoom }: mapit.CurveMarker
     fillColor: "none",
   };
 
+  console.log(symbol);
+
   return <Marker position={pos1} clickable={false} icon={symbol} zIndex={0} />;
 }

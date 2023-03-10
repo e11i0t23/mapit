@@ -6,7 +6,7 @@ import Map from "./components/Map";
 import Header from "./components/Header";
 
 import { useImmer } from "use-immer";
-import { useState } from "react";
+import { useState, useMemo, useRef } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +15,14 @@ export default function Home() {
   const [menu, setMenu] = useState<mapit.menu>("style");
   const [options, setOptions] = useImmer<google.maps.MapOptions>({
     zoom: 2,
+    center: { lat: 0, lng: 30.00000000000001 },
+    styles: [],
+  });
+  const center = useRef({ lat: 0, lng: 0 });
+  const getOptions = () => ({
+    zoom: options.zoom,
     zoomControl: false,
+    center: options.center,
     minZoom: 2,
     maxZoom: 16,
     streetViewControl: false,
@@ -24,7 +31,26 @@ export default function Home() {
     zoomControlOptions: {
       position: 9,
     },
-    styles: [],
+    styles: options.styles,
+  });
+
+  const optionsMemo = useMemo<google.maps.MapOptions>(() => {
+    const options = getOptions();
+    console.log(options);
+    return options;
+  }, [options.zoom, options.center, options.styles, center.current]);
+
+  const [staticURL, setStaticURL] = useImmer<Props>({
+    key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    scale: 2,
+    zoom: 2,
+    center: "0,30",
+    size: "1000x800",
+    format: "png",
+    maptype: "roadmap",
+    markers: [],
+    paths: [],
+    style: "",
   });
   return (
     <>
@@ -42,6 +68,9 @@ export default function Home() {
           setMarkers={setMarkers}
           menu={menu}
           setMenu={setMenu}
+          staticURL={staticURL}
+          setStaticURL={setStaticURL}
+          optionsMemo={optionsMemo}
         />
         <Map
           options={options}
@@ -50,6 +79,9 @@ export default function Home() {
           setMarkers={setMarkers}
           menu={menu}
           setMenu={setMenu}
+          staticURL={staticURL}
+          setStaticURL={setStaticURL}
+          optionsMemo={optionsMemo}
         />
       </main>
     </>

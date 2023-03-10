@@ -33,7 +33,6 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
   }
 
   function updateType(e: React.ChangeEvent<HTMLSelectElement>) {
-    console.log("uuuuu");
     const type = e.target.value as mapit.MarkerType;
     let len = 0;
     switch (type) {

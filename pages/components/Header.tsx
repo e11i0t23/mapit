@@ -2,8 +2,19 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@fir
 import { addDoc, collection, getDocs, getDoc, doc, updateDoc } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../../lib/firebase";
+import { staticMapUrl } from "static-google-map";
 
-export default function Header({ options, setOptions, markers, setMarkers, menu, setMenu }: mapit.mainProps) {
+export default function Header({
+  options,
+  setOptions,
+  markers,
+  setMarkers,
+  menu,
+  setMenu,
+  staticURL,
+  setStaticURL,
+  optionsMemo,
+}: mapit.mainProps) {
   const [showPage, setShowPage] = useState<string>("app");
   const [email, setEmail] = useState("");
   const [pwd, setPWD] = useState("");
@@ -81,6 +92,11 @@ export default function Header({ options, setOptions, markers, setMarkers, menu,
             </li>
           </ul>
           <ul className="navbar-nav navbar-expand">
+            <li className="nav-item me-3">
+              <a className="nav-link" href={staticMapUrl(staticURL)} target="_blank">
+                Download
+              </a>
+            </li>
             {auth.currentUser !== null ? (
               <>
                 <li className="nav-item dropdown">

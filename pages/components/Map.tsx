@@ -2,7 +2,7 @@ import styles from "@/styles/Home.module.css";
 
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { Draft } from "immer";
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 
 import MarkersAdder from "./MarkerAdder";
 import Markers from "./Markers";
@@ -13,12 +13,17 @@ const containerStyle = {
   height: "calc(100vh - 100px)",
 };
 
-const center = {
-  lat: 0,
-  lng: 30,
-};
-
-export default function Map({ options, setOptions, markers, setMarkers, menu, setMenu }: mapit.mainProps) {
+export default function Map({
+  options,
+  setOptions,
+  markers,
+  setMarkers,
+  menu,
+  setMenu,
+  staticURL,
+  setStaticURL,
+  optionsMemo,
+}: mapit.mainProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
@@ -42,6 +47,11 @@ export default function Map({ options, setOptions, markers, setMarkers, menu, se
       setOptions((draft: Draft<google.maps.MapOptions>) => {
         draft.zoom = typeof currentZoom === "number" ? currentZoom : 2;
       });
+
+      setStaticURL((draft: Draft<Props>) => {
+        draft.zoom = typeof currentZoom === "number" ? currentZoom : 2;
+      });
+
       return true;
     }
     return false;
@@ -65,6 +75,13 @@ export default function Map({ options, setOptions, markers, setMarkers, menu, se
           mark.polyLineOptions = marker.polyLineOptions;
         }
       });
+  };
+
+  const updateStatic = () => {
+    setStaticURL((draft: Draft<Props>) => {
+      const currentCenterURL = map?.getCenter()?.toUrlValue();
+      if (typeof currentCenterURL !== "undefined") draft.center = currentCenterURL;
+    });
   };
 
   return isLoaded ? (
@@ -121,11 +138,15 @@ export default function Map({ options, setOptions, markers, setMarkers, menu, se
       <div className="col-9">
         <GoogleMap
           mapContainerStyle={containerStyle}
-          center={center}
           onLoad={onLoad}
           onUnmount={onUnmount}
-          options={{ ...options }}
-          zoom={options.zoom as number | undefined}
+          onDragEnd={() => {
+            setOptions((draft: Draft<google.maps.MapOptions>) => {
+              draft.center = map?.getCenter()?.toJSON();
+            });
+            updateStatic();
+          }}
+          options={optionsMemo}
           onZoomChanged={handleZoom}
           onProjectionChanged={() => {
             setProjection(true);
@@ -133,7 +154,13 @@ export default function Map({ options, setOptions, markers, setMarkers, menu, se
         >
           {projection && map != null && (
             <div>
-              <Markers markers={markers} map={map} />
+              <Markers
+                markers={markers}
+                map={map}
+                style={options.styles as google.maps.MapTypeStyle[]}
+                staticURL={staticURL}
+                setStaticURL={setStaticURL}
+              />
             </div>
           )}
         </GoogleMap>

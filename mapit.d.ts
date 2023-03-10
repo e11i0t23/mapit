@@ -130,6 +130,9 @@ declare namespace mapit {
     setMarkers: Updater<mapit.marker[]>;
     menu: mapit.menu;
     setMenu: SetStateAction<mapit.menu>;
+    staticURL: Props;
+    setStaticURL: Updater<Props>;
+    optionsMemo: google.maps.MapOptions;
   };
 
   type CurveMarkerProps = {
@@ -147,6 +150,9 @@ declare namespace mapit {
   type MarkersProps = {
     markers: Marker[];
     map: google.maps.Map;
+    style: google.maps.MapTypeStyle[];
+    staticURL: Props;
+    setStaticURL: Updater<Props>;
   };
 }
 
