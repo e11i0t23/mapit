@@ -1,38 +1,94 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mapit
 
-## Getting Started
+A custom google maps builder using the google maps javascdript api, for creating styled maps which can then be downloaded using the google maps static api. This App is a client only app therefore making use of firebase authentication and firestore for all backend functions.
 
-First, run the development server:
+## Running the application
+
+### Development
+
+To start this app first environmental variables will need to be setup in a .env.local file (see environment.d.ts for detail), when running in dev this app also makes use of firebase emulators.
+
+Initialise Firebase with:
+
+```bash
+firebase init
+```
+
+Run the Emulators with:
+
+```bash
+firebase emulators:start
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Production
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+After setting environmental variables, build the app with:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Languages, Frameworks, and Tools Used
 
-## Learn More
+- [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)
+- [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS)
+  - [Bootsrap](https://getbootstrap.com/)
+- [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) and [Typescript](https://www.typescriptlang.org/)
+  - [React](https://reactjs.org/)
+  - [NextJS](https://nextjs.org/)
+  - [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api)
+  - [static-google-map](https://github.com/DaddyWarbucks/static-google-map)
+- [Git](https://git-scm.com/)
+  - [Github](https://github.com/)
+- [Netlify](https://www.netlify.com/)
+- [firebase](https://firebase.google.com/)
+- [Google Maps JS API](https://developers.google.com/maps/documentation/javascript)
+- [Google Maps Static API](https://developers.google.com/maps/documentation/maps-static)
 
-To learn more about Next.js, take a look at the following resources:
+## File Tree and Overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```Bash
+├── README.md
+├── environmnet.d.ts # Type Definitions for environmental variables
+├── firebase.json
+├── firestore.indexes.json
+├── firestore.rules # Rules for firestore, must manually be set on firebase console
+├── lib
+│   ├── firebase.ts # Utility fucntions for initialising firebase
+│   └── styles.ts # Simple export of the styles, features and elements the app suports
+├── mapit.d.ts # Type definitons for the project
+├── next-env.d.ts
+├── next.config.js
+├── package-lock.json
+├── package.json
+├── pages
+│   ├── _app.tsx
+│   ├── _document.tsx
+│   ├── components
+│   │   ├── CurveMarker.tsx # A Component to produce pretty arcs
+│   │   ├── Header.tsx # The websites headers
+│   │   ├── Map.tsx # The Map function rendering the map container
+│   │   ├── MarkerAdder.tsx # The marker adjust sidebar
+│   │   ├── Markers.tsx # A utility component to convert our markers array into a jsx elements array
+│   │   └── Styles.tsx # The styles adjust sidebar component
+│   └── index.tsx # The main entry page for the app
+├── public
+│   ├── favicon.ico
+│   ├── next.svg
+│   ├── thirteen.svg
+│   └── vercel.svg
+├── styles
+│   ├── Home.module.css
+│   ├── Styles.module.css
+│   └── globals.css
+└── tsconfig.json
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
