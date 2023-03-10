@@ -93,7 +93,7 @@ export default function Header({
           </ul>
           <ul className="navbar-nav navbar-expand">
             <li className="nav-item me-3">
-              <a className="nav-link" href={staticMapUrl(staticURL)} target="_blank">
+              <a className="nav-link" href={staticMapUrl(staticURL)} target="_blank" rel="noreferrer">
                 Download
               </a>
             </li>
