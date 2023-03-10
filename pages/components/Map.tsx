@@ -31,10 +31,13 @@ export default function Map({
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [projection, setProjection] = useState<boolean>(false);
 
-  const onLoad = useCallback(function callback(map: google.maps.Map) {
-    map.setOptions(options);
-    setMap(map);
-  }, []);
+  const onLoad = useCallback(
+    function callback(map: google.maps.Map) {
+      map.setOptions(options);
+      setMap(map);
+    },
+    [options]
+  );
 
   const onUnmount = useCallback(function callback(map: google.maps.Map) {
     setMap(null);

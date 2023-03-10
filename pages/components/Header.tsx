@@ -55,10 +55,21 @@ export default function Header({
 
   const save = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log(options);
+    console.log(markers);
     if (auth.currentUser !== null) {
       if (id === undefined)
-        addDoc(collection(db, `/user/${auth.currentUser.uid}/maps`), { options: options, markers: markers })
-          .then((e) => setId(e.id))
+        addDoc(collection(db, `/user/${auth.currentUser.uid}/maps`), {
+          options: options,
+          markers: markers.map((x, i) => ({
+            ...x,
+            polyLineOptions: x.polyLineOptions === undefined ? "undefined" : x.polyLineOptions,
+          })),
+        })
+          .then((e) => {
+            setId(e.id);
+            setDocs([...docs, e.id]);
+          })
           .catch((e) => console.log(e.message));
       else updateDoc(doc(db, "user", auth.currentUser.uid, "maps", id), { options: options, markers: markers });
     }
@@ -70,10 +81,15 @@ export default function Header({
         const data = map.data();
         if (data !== undefined) {
           setOptions(data.options);
-          setMarkers(data.markers);
+          setMarkers(
+            data.markers.map((x: any, i: number) => ({
+              ...x,
+              polyLineOptions: x.polyLineOptions === "undefined" ? undefined : x.polyLineOptions,
+            }))
+          );
         }
       });
-  }, [id]);
+  }, [id, setOptions, setMarkers]);
 
   return (
     <>
@@ -93,7 +109,12 @@ export default function Header({
           </ul>
           <ul className="navbar-nav navbar-expand">
             <li className="nav-item me-3">
-              <a className="nav-link" href={staticMapUrl(staticURL)} target="_blank" rel="noreferrer">
+              <a
+                className="nav-link"
+                href={staticURL !== undefined ? staticMapUrl(staticURL) : ""}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Download
               </a>
             </li>

@@ -52,7 +52,7 @@ export default function Styles({ options, setOptions }: mapit.stylesProp) {
   // When feature is changed set selected elements to undefined
   useEffect(() => {
     setElement(undefined);
-  }, [feature]);
+  }, [feature, setElement]);
 
   // When an element is selected we find see if settings for it already exist in our styles array and load the settings otherwise default values are used
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function Styles({ options, setOptions }: mapit.stylesProp) {
         draft.weight = weight === undefined ? 1 : (weight.weight as number);
       });
     } else setForm(defaultForm);
-  }, [element]);
+  }, [element, setForm]);
 
   // Handel updating our styles array when the form updates
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function Styles({ options, setOptions }: mapit.stylesProp) {
           );
       });
     }
-  }, [form]);
+  }, [form, setForm, setOptions]);
 
   return (
     <>

@@ -22,7 +22,7 @@ export default function MarkersAdder({ addMarker, marker }: mapit.MarkerAdderPro
     if (marker !== undefined) {
       setMarker(marker);
     }
-  }, [marker]);
+  }, [marker, setMarker]);
 
   function onSubmit() {
     setMarker((draft: Draft<mapit.Marker>) => {

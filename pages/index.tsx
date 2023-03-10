@@ -18,7 +18,6 @@ export default function Home() {
     center: { lat: 0, lng: 30.00000000000001 },
     styles: [],
   });
-  const center = useRef({ lat: 0, lng: 0 });
   const getOptions = () => ({
     zoom: options.zoom,
     zoomControl: false,
@@ -38,7 +37,7 @@ export default function Home() {
     const options = getOptions();
     console.log(options);
     return options;
-  }, [options.zoom, options.center, options.styles, center.current]);
+  }, [options.zoom, options.center, options.styles, getOptions]);
 
   const [staticURL, setStaticURL] = useImmer<Props>({
     key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,

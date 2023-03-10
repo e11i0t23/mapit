@@ -16,7 +16,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
     setStaticURL((draft: Draft<Props>) => {
       draft.style = handleStyles(style);
     });
-  }, [style]);
+  }, [style, setStaticURL]);
 
   useEffect(() => {
     setArr([]);
@@ -134,7 +134,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
           break;
       }
     }
-  }, [markers, map.getZoom()]);
+  }, [markers, zoom, map, setArr, setStaticURL]);
   useEffect(() => {
     console.log(staticMapUrl(staticURL));
   }, [staticURL]);
