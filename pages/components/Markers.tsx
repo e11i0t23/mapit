@@ -6,7 +6,7 @@ import { useEffect } from "react";
 export default function Markers({ markers, map }: mapit.MarkersProps) {
   var i = 0;
   var [arr, setArr] = useImmer<JSX.Element[]>([]);
-  const zoom = map.getZoom() as number;
+  const zoom = map === undefined ? 1 : (map.getZoom() as number);
   useEffect(() => {
     setArr([]);
     for (const marker of markers) {
