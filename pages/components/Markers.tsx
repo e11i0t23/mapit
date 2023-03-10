@@ -1,5 +1,6 @@
 import { Marker, Polyline, DirectionsRenderer } from "@react-google-maps/api";
 import { useImmer } from "use-immer";
+import { Draft } from "immer";
 import CurveMarker from "./CurveMarker";
 import { useEffect } from "react";
 import { staticMapUrl } from "static-google-map";
@@ -12,14 +13,14 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
   var [arr, setArr] = useImmer<JSX.Element[]>([]);
 
   useEffect(() => {
-    setStaticURL((draft) => {
+    setStaticURL((draft: Draft<Props>) => {
       draft.style = handleStyles(style);
     });
   }, [style]);
 
   useEffect(() => {
     setArr([]);
-    setStaticURL((d) => {
+    setStaticURL((d: Draft<Props>) => {
       d.markers = [];
       d.paths = [];
     });
@@ -34,7 +35,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
               setArr((d) => {
                 d.push(<Marker key={i++} position={point} clickable={false} options={point.marker.options} />);
               });
-              setStaticURL((d) => {
+              setStaticURL((d: Draft<Props>) => {
                 d.markers?.push({
                   color: `red`,
                   location: { lat: point.lat.toString(), lng: point.lng.toString() },
@@ -47,7 +48,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
           setArr((d) => {
             d.push(<Polyline key={i++} path={marker.points} />);
           });
-          setStaticURL((d) => {
+          setStaticURL((d: Draft<Props>) => {
             d.paths?.push({
               color: `${(marker.polyLineOptions?.strokeColor as string).replace("#", "0x")}${(
                 ((marker.polyLineOptions?.strokeOpacity as number) * 255) /
@@ -62,7 +63,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
               setArr((d) => {
                 d.push(<Marker key={i++} position={point} clickable={false} options={point.marker.options} />);
               });
-              setStaticURL((d) => {
+              setStaticURL((d: Draft<Props>) => {
                 d.markers?.push({
                   color: `red`,
                   location: { lat: point.lat.toString(), lng: point.lng.toString() },
@@ -82,7 +83,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
               />
             );
           });
-          setStaticURL((d) => {
+          setStaticURL((d: Draft<Props>) => {
             d.markers?.push({
               color: `red`,
               location: { lat: marker.points[0].lat.toString(), lng: marker.points[0].lng.toString() },
@@ -107,7 +108,7 @@ export default function Markers({ markers, map, style, staticURL, setStaticURL }
                   />
                 );
               });
-              setStaticURL((d) => {
+              setStaticURL((d: Draft<Props>) => {
                 d.paths?.push({
                   color: `${(marker.polyLineOptions?.strokeColor as string).replace("#", "0x")}${(
                     ((marker.polyLineOptions?.strokeOpacity as number) * 255) /
