@@ -37,6 +37,4 @@ next-env.d.ts
 
 # Firebase Config
 *.log
-firebase.json
 .firebaserc
-firestore.indexes.json
